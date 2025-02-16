@@ -13,3 +13,8 @@ def insertion_requetes(tableau, champs, valeurs):
     curseur.execute(requete) ; 
     curseur.close() ; connexion.commit() ; connexion.close()
     
+def update_requetes(tableau, valeurs, conditions):
+    requete = (f"UPDATE {tableau} SET {valeurs} WHERE {conditions}")
+    connexion = sqlite3.connect("BDD_en_cours_jeu.db") ; curseur = connexion.cursor()
+    curseur.execute(requete) ; 
+    curseur.close() ; connexion.commit() ; connexion.close()
