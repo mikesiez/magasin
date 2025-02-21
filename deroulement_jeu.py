@@ -1,3 +1,4 @@
+not tested
 # initialisation de base avec produits initiales:
 from datetime import datetime, timedelta
 import requetes_sql
