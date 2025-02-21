@@ -1,10 +1,16 @@
 **Product prices ratios (warehouse --> store // store --> customer)**
-Bakery & Biscuit Products → ~30-40% markup
+Bakery & Biscuit Products → ~30-40% markup 
+
 Juices & Beverages → ~40-50% markup
+
 Cleaning Products → ~50-60% markup
+
 Vegetables & Fresh Products → ~40-50% markup
+
 Dairy & Cheese → ~40-50% markup
+
 Frozen Food → ~40-50% markup
+
 Stationery & Miscellaneous → ~50-60% markup
 
 **Products available:**
