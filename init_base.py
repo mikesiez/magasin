@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import requetes_sql
-import deroulement_jeu
+
+date_ = datetime.strptime("2025-01-01 00:00:00", '%Y-%m-%d %H:%M:%S') # quand on initialise la base, c'est necessairement au debut du temps, donc pas besoin dutiliser la date de deroulement_jeu. Lors du jeu, l'ajout de produit est gerer la bas.
 
 def dechargement_csv():
     #recuperation donnees csv:
@@ -19,11 +20,11 @@ def dechargement_csv():
 
         for i in range(stock):
             prod_id,temps_de_vie,prix_vente = requetes_sql.selection_requetes("Produit","produit_id,temps_de_vie,prix_vente",f'WHERE "produit_nom" = "{nom}"')[0]
-            date_preemption = deroulement_jeu.date + timedelta(days=temps_de_vie)
+            date_preemption = date_ + timedelta(days=temps_de_vie)
             statut_id = requetes_sql.selection_requetes("Statut","statut_id",f'WHERE "libelle_statut" = "S"')[0][0]
 
             requetes_sql.insertion_requetes("Exemplaire",
             '"produit_id","statut_id","date_entree","date_preemption","prix_vente_modifier"',
-            f'{prod_id},"{statut_id}","{deroulement_jeu.date}","{date_preemption}",{prix_vente}')
+            f'{prod_id},"{statut_id}","{date_}","{date_preemption}",{prix_vente}')
 
 dechargement_csv()
