@@ -1,5 +1,0 @@
-Le prix_vente_modifier qui va etre utiliser quand le produit est vendu est intitialiser d'apres le prix_vente du produit dans la table produit. Donc on doit juste ouvrir DB, aller dans la partie "Browse Data", choisir la table Produit, et changer prix_achat et prix_vente.
-Puis:
-DELETE FROM Exemplaire
-DELETE FROM sqlite_sequence WHERE seq = 750
-Puis executer le fichier python init_base qui au moment decharge le fichier csv, qui sera fait avec les nouveau prix.
