@@ -4,38 +4,49 @@ import random
 import pygame
 import time
 
-magasin = {}
-reserve = {}
+magasin = {} # Les objets que le joueur puissent acheter
+reserve = {} # Les objets en stock
 money = 100  # Le joueur commence avec 100€
 
-class File:
+class File: # Structure de Base d'une File
     def __init__(self):
          self.file = []
+
     def enfile(self, element):  # Ajoute un element à la fin de la liste
         self.file.append(element)
+
     def defile(self):  # Défiler et retourne l'élément défiler
         if not self.est_vide():
             return self.file.pop(0)
+        
     def est_vide(self):
         return self.file == []
+    
     def __str__(self):
         return ', '.join(map(str, self.file))
+
 
 class Pile:
     def __init__(self):
         self.pile = []
+
     def empile(self, element):
         self.pile.append(element)
+
     def depile(self):
         if not self.est_vide():
             return self.pile.pop(-1)
+        
     def est_vide(self):
         return self.pile == []
+    
     def __str__(self):
         return ', '.join(map(str, self.pile))
 
-class Management:
-    def Dict_reserve():
+
+class Management: # No instances, only sub-functions
+    def Dict_reserve(): # Dictionnary with keys being the isle numbers, values being sub dictionnaries, REPRESENTS WAREHOUSE
+                        # Sub dictionnary contains product_id as a key, and pile for instances of the product in the warehouse as values
         global reserve
         liste_exemplaires = requetes_sql.selection_requetes("Exemplaire JOIN Produit JOIN Categorie",
                                                             "Exemplaire.exemplaire_id, Exemplaire.produit_id, Categorie.rayon",
@@ -52,7 +63,8 @@ class Management:
                 reserve[rayon][id_produit] = Pile()
             reserve[rayon][id_produit].empile(id_exemplaire)
 
-    def transferer_vers_magasin(produit_id, rayon):
+    def transferer_vers_magasin(produit_id, rayon):  # Dictionnary with keys being the isle numbers, values being sub dictionnaries, REPRESENTS STOCK
+                                                     # Sub dictionnary contains product_id as a key, and file for instances of the product in the stock as values
         global magasin, reserve
         if rayon in reserve and produit_id in reserve[rayon]:
             if rayon not in magasin:
@@ -67,16 +79,18 @@ class Management:
                 else:
                     print("Out of stock while trying to restock")
                     
-    def restocker_etageres():
-    for rayon, produits in magasin.items():
-        for produit, file_exemplaires in produits.items():
-            if file_exemplaires.est_vide():
-                Management.transferer_vers_magasin(produit, rayon)
-                print(f"Le produit {produit} dans le rayon {rayon} a été réapprovisionné.")
+    def restocker_etageres(): # Goal: restocks a specific item on the shelf in stock
+        for rayon, produits in magasin.items():
+            for produit, file_exemplaires in produits.items():
+                if file_exemplaires.est_vide():
+                    Management.transferer_vers_magasin(produit, rayon)
+                    print(f"Le produit {produit} dans le rayon {rayon} a été réapprovisionné.")
+
+                    # Need to implement buying goods for the warehouse
 
 Management.Dict_reserve()
 
-for rayon in reserve:
+for rayon in reserve: # Stocks up the warehouse
         for produit_id in reserve[rayon]:
             Management.transferer_vers_magasin(produit_id, rayon)
 
@@ -85,29 +99,29 @@ def gestion_clients():
     if magasin and random.random() < 0.5:  # 50% chance de générer un client toutes les 3 secondes
         nombre_produits = random.randint(1, 4)
         for _ in range(nombre_produits):
-            rayon = random.choice(list(magasin.keys()))
+            rayon = random.choice(list(magasin.keys())) # Picks a random isle
             if magasin[rayon]:
-                produit = random.choice(list(magasin[rayon].keys()))
+                produit = random.choice(list(magasin[rayon].keys())) # Picks a random product
                 if magasin[rayon][produit] and not magasin[rayon][produit].est_vide():
-                    exemplaire_id = magasin[rayon][produit].defile()
+                    exemplaire_id = magasin[rayon][produit].defile() # Takes the first element of the shelf
 
                     # Vérifie si disponible à la vente (statut_id == 1)
                     statut = requetes_sql.selection_requetes("Exemplaire", "statut_id", f"WHERE exemplaire_id = {exemplaire_id}")
-                    if statut and statut[0][0] == 1:  # statut_id == 1 signifie qu'il est disponible à la vente
-                        # produit "vendu"
-                        requetes_sql.update_requetes("Exemplaire", "statut_id = 3", f"exemplaire_id = {exemplaire_id}")
+                
+                    # produit "vendu"
+                    requetes_sql.update_requetes("Exemplaire", "statut_id = 3", f"exemplaire_id = {exemplaire_id}")
 
-                        # prix du produit
-                        prix = requetes_sql.selection_requetes("Exemplaire", "prix_vente_modifier", f"WHERE exemplaire_id = {exemplaire_id}")[0][0]
+                    # prix du produit
+                    prix = requetes_sql.selection_requetes("Exemplaire", "prix_vente_modifier", f"WHERE exemplaire_id = {exemplaire_id}")[0][0]
 
-                        # Met à jour l'argent du joueur et affiche les détails de l'achat
-                        money += prix
-                        money = round(money, 2)
-                        print(f"Un client a acheté 1 exemplaire de produit {produit} dans le rayon {rayon} pour {prix}€.")
-                    else:
-                        print(f"Le produit {produit} dans le rayon {rayon} n'est pas disponible à la vente.")
+                    # Met à jour l'argent du joueur et affiche les détails de l'achat
+                    money += prix
+                    money = round(money, 2)
+                    print(f"Un client a acheté 1 exemplaire de produit {produit} dans le rayon {rayon} pour {prix}€.")
 
 
+
+# Pygame, UI
 def main():
     global date, money
     pygame.init()
